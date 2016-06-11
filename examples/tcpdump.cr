@@ -10,32 +10,19 @@ require "option_parser"
 
 filter  = "tcp port 80"
 device  = "lo"
-snaplen = 68
+snaplen = 65535
 timeout = 1000
 verbose = false
 
 oparse = OptionParser.parse! do |parser|
   parser.banner = "Usage: #{$0} [options]"
 
-  parser.on("-i lo", "--interface=lo", "\tNetworking interface") { |i|
-    device = i
-  }
-  parser.on("-f tcp port 80", "--filter=tcp port 80", "\tPcap filter") { |f|
-    filter = f
-  }
-  parser.on("-p 80", "--port=80", "\tPcap port") { |p|
-    filter = "tcp port #{p}"
-  }
-  parser.on("-s 1500", "--snaplen=1500", "\tSnap length max 65535 (default: 68)") { |s|
-    snaplen = s.to_i
-  }
-  parser.on("-v", "--verbose", "\tShow verbose output") {
-    verbose = true
-  }
-  parser.on("-h", "--help", "Show this help") { |h|
-    puts parser
-    exit 0
-  }
+  parser.on("-i lo", "Listen on interface") { |i| device = i }
+  parser.on("-f 'tcp port 80'", "filter"  ) { |f| filter = f }
+  parser.on("-p 80", "Pcap port"          ) { |p| filter = "tcp port #{p}" }
+  parser.on("-s 65535", "Snapshot length" ) { |s| snaplen = s.to_i }
+  parser.on("-v", "Show verbose output"   ) { verbose = true }
+  parser.on("-h", "--help", "Show help"   ) { puts parser; exit 0 }
 end
 oparse.parse!
 

@@ -8,6 +8,20 @@ module Pcap
     def initialize(@raw : LibPcap::TcpHeader, @packet_header : PacketHeader)
     end
 
+    ######################################################################
+    ### accessor
+
+    def src
+      tcp_src
+    end
+    
+    def dst
+      tcp_dst
+    end
+    
+    ######################################################################
+    ### native data
+    
     def tcp_doff
       # "101001..." => "1010".to_i(2) => 10
       tcp_offx2.to_s(2)[0..3].to_i(2)
