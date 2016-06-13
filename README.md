@@ -9,7 +9,7 @@ Crystal bindings for `libpcap`
 ## TODO
 
 - [x] `libpcap` api (0.1.0)
-- [ ] Crystal closure support in `Pcap::Handler`
+- [ ] Crystal closure support in `Pcap::Handler` *(needs help of Crystal experts)*
 - [x] Ether Header (0.1.0)
   - [x] parse
   - [x] inspect
@@ -84,40 +84,40 @@ cap.loop(handler)
 "$-1\r\n"
 ```
 
-#### `tcpdump -X`
+#### `tcpsniffer`
 
 ```shell
-% crystal examples/tcpdump.cr
-% crystal examples/tcpdump.cr -- -p 6379
-% crystal examples/tcpdump.cr -- -f '(tcp port 80) or (tcp port 8080)' 
-% crystal examples/tcpdump.cr -- -i eth0 -p 80
+% crystal examples/tcpsniffer.cr
+% crystal examples/tcpsniffer.cr -- -p 6379
+% crystal examples/tcpsniffer.cr -- -f '(tcp port 80) or (tcp port 8080)' 
+% crystal examples/tcpsniffer.cr -- -i eth0 -p 10080
 ```
 
 - send some packets like `curl localhost`
 
 ```
-22:27:08.419116 IP 127.0.0.1.54054 > 127.0.0.1.80: Flags [S], seq 607415934, win 43690, length 4294967290
+12:29:01.445261 IP 127.0.0.1.56016 > 127.0.0.1.80: Flags [S], seq 746220255, win 43690, length 0
+12:29:01.445282 IP 127.0.0.1.80 > 127.0.0.1.56016: Flags [SA], seq 4032610561, ack 746220256, win 43690, length 0
+```
+
+##### more output
+
+- `-x` prints hexdump of packets
+
+```
+% crystal examples/tcpsniffer.cr -- -x
+12:30:12.305080 IP 127.0.0.1.56018 > 127.0.0.1.80: Flags [S], seq 4253528483, win 43690, length 0
         0x0000:  0000 0000 0000 0000 0000 0000 0800 4500  ..............E.
-        0x0010:  003c c199 4000 4006 7b20 7f00 0001 7f00  .<..@.@.{ ......
-        0x0020:  0001 d326 0050 2434 6e7e 0000 0000 a002  ...&.P$4n~......
-        0x0030:  aaaa fe30 0000 0204 ffd7 0402 080a 071f  ...0............
-        0x0040:  afe7 0000                                ....
-22:27:08.419173 IP 127.0.0.1.80 > 127.0.0.1.54054: Flags [SA], seq 2290657103, ack 607415935, win 43690, length 4294967290
-        0x0000:  0000 0000 0000 0000 0000 0000 0800 4500  ..............E.
-...
+        0x0010:  003c 8c99 4000 4006 b020 7f00 0001 7f00  .<..@.@.. ......
+        0x0020:  0001 dad2 0050 fd87 b1a3 0000 0000 a002  .....P..........
+        0x0030:  aaaa fe30 0000 0204 ffd7 0402 080a 092a  ...0...........*
+        0x0040:  3d3a 0000 0000 0103 0307                 =:........
 ```
 
-#### debug
-
-- `-v` options make output verbose via `inspect`
-
-```shell
-% crystal examples/tcpdump.cr -- -v
-```
-
-- send some packets like `curl localhost`
+- `-v` prints packet structures (calls `inspect` internally)
 
 ```
+% crystal examples/tcpsniffer.cr -- -v
 --------------------------------------------------------------------------------
 Packet Header
   Time         : 2016-06-11 22:42:09 +0900 (1465652529.994580)

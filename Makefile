@@ -13,7 +13,7 @@ build: bin ${PROGS}
 bin:
 	@mkdir -p bin
 
-tcpdump: examples/tcpdump.cr
+tcpsniffer: examples/tcpsniffer.cr
 	crystal build --release $^ -o bin/$@ ${LINK_FLAGS}
 
 tcpbody: examples/tcpbody.cr

@@ -1,9 +1,9 @@
 # usage: (run as root)
-#   crystal examples/tcpdump.cr
-#   crystal examples/tcpdump.cr -- -v
-#   crystal examples/tcpdump.cr -- -p 6379
-#   crystal examples/tcpdump.cr -- -f '(tcp port 80) or (tcp port 8080)' 
-#   crystal examples/tcpdump.cr -- -i eth0 -p 80
+#   crystal examples/tcpsniffer.cr
+#   crystal examples/tcpsniffer.cr -- -v
+#   crystal examples/tcpsniffer.cr -- -p 6379
+#   crystal examples/tcpsniffer.cr -- -f '(tcp port 80) or (tcp port 8080)' 
+#   crystal examples/tcpsniffer.cr -- -i eth0 -p 80
 
 require "../src/pcap"
 require "option_parser"
@@ -20,7 +20,7 @@ oparse = OptionParser.parse! do |parser|
 
   parser.on("-i lo", "Listen on interface") { |i| device = i }
   parser.on("-f 'tcp port 80'", "filter"  ) { |f| filter = f }
-  parser.on("-p 80", "Pcap port"          ) { |p| filter = "tcp port #{p}" }
+  parser.on("-p 80", "Capture port (overridden by -f)") { |p| filter = "tcp port #{p}" }
   parser.on("-s 65535", "Snapshot length" ) { |s| snaplen = s.to_i }
   parser.on("-x", "Show hexdump output"   ) { hexdump = true }
   parser.on("-v", "Show verbose output"   ) { verbose = true }
