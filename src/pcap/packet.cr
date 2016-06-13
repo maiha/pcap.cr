@@ -5,12 +5,11 @@ module Pcap
     property packet_header : Pcap::PacketHeader
     delegate caplen, len, @packet_header
     
-    def initialize(@user : LibPcap::UChar*, pkthdr_p : LibPcap::PcapPkthdr*, @data : LibPcap::UChar*)
-      # @user : user given string from 4th arg in the pcap_loop
-      # pkthdr_p : a pointer to the packet header structure
-      # @data : all packet data
+    def initialize(headp : LibPcap::PcapPkthdr*, @data : LibPcap::UChar*)
+      # headp : a pointer to the packet header structure
+      # @data : a pointer to the raw packet bytes
 
-      @packet_header = PacketHeader.new(pkthdr_p.value)
+      @packet_header = PacketHeader.new(headp.value)
     end
 
     def capture_slice

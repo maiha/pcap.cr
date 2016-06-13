@@ -2,6 +2,23 @@
 
 Crystal bindings for `libpcap`
 
+```crystal
+require "pcap"
+
+cap = Pcap::Capture.open_live("eth0")
+cap.setfilter("tcp port 80")
+cap.loop do |pkt|
+  if pkt.tcp_data?
+    p pkt.tcp_data.to_s
+  end
+end
+```
+
+```
+"GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.47.0\r\nAccept: */*\r\n\r\n"
+"HTTP/1.1 200 OK\r\nServer: nginx/1.10.0 (Ubuntu)\r\nDate: Mon, 13 Jun 2016 ...
+```
+
 ## Status
 
 - support only tcp
@@ -9,7 +26,7 @@ Crystal bindings for `libpcap`
 ## TODO
 
 - [x] `libpcap` api (0.1.0)
-- [ ] Crystal closure support in `Pcap::Handler` *(needs help of Crystal experts)*
+- [x] Crystal closure support in `Pcap::Handler` (0.2.0)
 - [x] Ether Header (0.1.0)
   - [x] parse
   - [x] inspect
@@ -44,15 +61,12 @@ And then
 
 ## Usage
 
-
 ```crystal
 require "pcap"
 
 cap = Pcap::Capture.open_live("eth0")
 cap.setfilter("tcp port 80")
-
-handler = Pcap::Handler.new { |data, h, bytes|
-  pkt = Pcap::Packet.new(data, h, bytes)
+cap.loop do |pkt|
   # p pkt.ether_header
   # p pkt.ip_header
   # p pkt.tcp_header
@@ -60,9 +74,6 @@ handler = Pcap::Handler.new { |data, h, bytes|
     p pkt.tcp_data.to_s
   end
 }
-
-cap.loop(handler)
-
 ```
 
 ## Examples

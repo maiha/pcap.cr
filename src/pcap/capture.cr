@@ -1,6 +1,6 @@
 module Pcap
   class Capture
-    DEFAULT_SNAPLEN    = 68
+    DEFAULT_SNAPLEN    = 1500
     DEFAULT_PROMISC    = 1
     DEFAULT_TIMEOUT_MS = 1000
 
@@ -28,24 +28,18 @@ module Pcap
       LibPcap.pcap_setfilter(@pcap, bpfprogram)
     end
 
-    #    def loop(callback, count : Int32 = -1, user : String = "")
-    #      LibPcap.pcap_loop(@pcap, count, callback, user)
-    #    end
-
-    def loop(callback)
-      count = -1
-      user = nil
-      LibPcap.pcap_loop(@pcap, count, callback, user)
+    def loop(count : Int32 = -1, &callback : Pcap::Packet ->)
+      @@callback = callback   # ref to the object in order to avoid GC
+      boxed = Box.box(callback).as(Pointer(UInt8)) # serialize to `UChar*` via `Void*`
+      
+      handler = Pcap::Handler.new { |_boxed, headp, bytes|
+        pkt = Pcap::Packet.new(headp, bytes)
+        cb = Box(typeof(callback)).unbox(_boxed.as(Pointer(Void))) # deserialize callback
+        cb.call(pkt)
+      }
+      LibPcap.pcap_loop(@pcap, count, handler, boxed)
     end
-
-    def loop(count : Int32 = -1, user : String? = nil)
-      #      cb = Box
-      #      handler = LibPcap::PcapHandler.new { |data, h, bytes|
-      #        @callback.call(Packet.new(data, h, bytes))
-      #      }
-      #      LibPcap.pcap_loop(@pcap, count, handler, user)
-    end
-
+    
     def close
       LibPcap.pcap_close(@pcap)
     end

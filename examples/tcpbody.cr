@@ -11,12 +11,8 @@ cap = Pcap::Capture.open_live("lo", snaplen: 1500)
 at_exit { cap.close }
 cap.setfilter("tcp port #{port}")
 
-handler =
-  Pcap::Handler.new { |data, h, bytes|
-    pkt = Pcap::Packet.new(data, h, bytes)
-    if pkt.tcp_data?
-      p pkt.tcp_data.to_s
-    end
-  }
-
-cap.loop(handler)
+cap.loop do |pkt|
+  if pkt.tcp_data?
+    p pkt.tcp_data.to_s
+  end
+end
