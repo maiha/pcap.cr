@@ -68,7 +68,22 @@ module Pcap
     end
 
     def to_s(io : IO)
-      print_XX(io)
+      # [goal]
+      # 14:17:50.516090 IP 127.0.0.1.55768 > 127.0.0.1.80: Flags [S], seq 3879550979, win 43690, options [mss 65495,sackOK,TS val 68977683 ecr 0,nop,wscale 7], length 0
+
+      # [14:17:50.516090]
+      packet_header.to_s(io)
+      io << " "
+      tcp_header.to_s(io, ip_header)
+    end
+
+    # similar to "tcpdump -XX"
+    def hexdump(io : IO)
+      io << embed_memory_address(capture_slice.hexdump, " "*8)
+    end
+
+    def hexdump
+      String.build {|io| hexdump(io) }
     end
     
     def inspect(io : IO)
@@ -85,19 +100,6 @@ module Pcap
         io << "  (%s bytes)\n" % tcp_header.tcp_data_size
         io << embed_memory_address(tcp_data.bytes.hexdump, " "*2)
       end
-    end
-
-    # similar to "tcpdump -XX"
-    private def print_XX(io : IO)
-      # [goal]
-      # 14:17:50.516090 IP 127.0.0.1.55768 > 127.0.0.1.80: Flags [S], seq 3879550979, win 43690, options [mss 65495,sackOK,TS val 68977683 ecr 0,nop,wscale 7], length 0
-
-      # [14:17:50.516090]
-      packet_header.to_s(io)
-      io << " "
-      tcp_header.to_s(io, ip_header)
-      io << "\n"
-      io << embed_memory_address(capture_slice.hexdump, " "*8)
     end
     
     private def embed_memory_address(buf : String, prefix : String = "")
