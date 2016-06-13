@@ -8,36 +8,47 @@
 require "../src/pcap"
 require "option_parser"
 
-filter  = "tcp port 80"
-device  = "lo"
-snaplen = 1500
-timeout = 1000
-hexdump = false
-verbose = false
+filter   = "tcp port 80"
+device   = "lo"
+snaplen  = 1500
+timeout  = 1000
+hexdump  = false
+verbose  = false
+dataonly = false
+bodymode = false
 
-oparse = OptionParser.parse! do |parser|
+opts = OptionParser.new do |parser|
   parser.banner = "Usage: #{$0} [options]"
 
   parser.on("-i lo", "Listen on interface") { |i| device = i }
   parser.on("-f 'tcp port 80'", "Pcap filter string. See pcap-filter(7)"  ) { |f| filter = f }
   parser.on("-p 80", "Capture port (overridden by -f)") { |p| filter = "tcp port #{p}" }
   parser.on("-s 1500", "Snapshot length"  ) { |s| snaplen = s.to_i }
-  parser.on("-x", "Show hexdump output"   ) { hexdump = true }
-  parser.on("-v", "Show verbose output"   ) { verbose = true }
+  parser.on("-d", "Filter packets where tcp data exists") { dataonly = true }
+  parser.on("-b", "Body printing mode"    ) { bodymode = true }
+  parser.on("-x", "Show hexdump output"   ) { hexdump  = true }
+  parser.on("-v", "Show verbose output"   ) { verbose  = true }
   parser.on("-h", "--help", "Show help"   ) { puts parser; exit 0 }
 end
-oparse.parse!
 
 begin
+  opts.parse!
+  
   cap = Pcap::Capture.open_live(device, snaplen: snaplen, timeout_ms: timeout)
   at_exit { cap.close }
   cap.setfilter(filter)
 
   cap.loop do |pkt|
-    puts pkt.to_s
-    puts "-" * 80    if verbose
-    puts pkt.inspect if verbose
-    puts pkt.hexdump if hexdump
+    next if dataonly && !pkt.tcp_data?
+
+    if bodymode
+      puts "%s: %s" % [pkt.packet_header, pkt.tcp_data.to_s.inspect]
+    else
+      puts pkt.to_s
+      puts "-" * 80     if verbose
+      puts pkt.inspect  if verbose
+      puts pkt.hexdump  if hexdump
+    end
   end
 rescue err
   STDERR.puts "#{$0}: #{err}"

@@ -154,6 +154,15 @@ IpHeader
 ...
 ```
 
+- `-d` prints only packets where tcp data exist
+- `-b` prints body oriented format (body mode)
+
+```
+% crystal examples/tcpsniffer.cr -- -b -d
+17:12:24.261729: "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.47.0\r\nAccept: */*\r\n\r\n"
+17:12:24.262003: "HTTP/1.1 200 OK\r\nServer: nginx/1.10.0 (Ubuntu)\r\nDate: Mon, 13 Jun 2016 ...
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/maiha/pcap.cr/fork )
