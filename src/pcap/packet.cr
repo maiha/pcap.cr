@@ -12,6 +12,20 @@ module Pcap
       @packet_header = PacketHeader.new(headp.value)
     end
 
+    ######################################################################
+    ### high performance api
+
+    # returns a string of host and port about src
+    # ex: "127.0.0.1:80"
+    val src = "#{IpAddr.inspect(ip_header.ip_src)}:#{tcp_header.src}"
+    
+    # returns a string of host and port about dst
+    # ex: "127.0.0.1:80"
+    val dst = "#{IpAddr.inspect(ip_header.ip_dst)}:#{tcp_header.dst}"
+    
+    ######################################################################
+    ### human friendly api
+    
     def capture_slice
       @data.to_slice(caplen)
     end
@@ -25,14 +39,13 @@ module Pcap
       (@data + offset).to_slice(len)
     end
 
-    def ether_header
+    val ether_header =
       EtherHeader.new((@data.as(Pointer(LibPcap::EtherHeader))).value)
-    end
 
-    def ip_header
+    val ip_header = (
       ptr = @data + sizeof(LibPcap::EtherHeader)
       IpHeader.new((ptr.as(Pointer(LibPcap::IpHeader))).value)
-    end
+    )
 
     def size_ip
       ip_header.ip_hl * 4
@@ -42,29 +55,26 @@ module Pcap
       tcp_header.length
     end
 
-    def tcp_header
+    val tcp_header = (
       ptr = @data + sizeof(LibPcap::EtherHeader) + size_ip
       TcpHeader.new((ptr.as(Pointer(LibPcap::TcpHeader))).value, packet_header)
-    end
+    )
 
     def tcp_data?
       tcp_header.tcp_data_offset < caplen
     end
     
-    def tcp_data
+    val tcp_data = (
       elen = sizeof(LibPcap::EtherHeader)
       ilen = sizeof(LibPcap::IpHeader)
       tlen = tcp_header.length
+
       offset = elen + ilen + tlen
       ptr = @data + offset
       len = caplen - offset
 
-#      if len <= 0
-#        raise Pcap::Error.new("invalid packet size: #{caplen}(caplen) < #{offset}(offset) = ether(#{elen}) + ip(#{ilen}) + tcp(#{tlen})")
-#      end
-
       Pcap::TcpData.new(ptr, len)
-    end
+    )
 
     def to_s(io : IO)
       # [goal]

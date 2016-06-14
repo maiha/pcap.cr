@@ -16,6 +16,7 @@ module Pcap
       io << String.new(Slice.new(ary.to_unsafe, ary.size))
     end
 
+    @[AlwaysInline]
     private def to_printable(v)
       case v
       when 0x0a, 0x0d; v

@@ -42,5 +42,17 @@ module Pcap
       io << "  Src IP Addr     : %s\n" % src
       io << "  Dst IP Addr     : %s\n" % dst
     end
+
+    module Optimized
+      def src_str
+        IpAddr.inspect(ip_src)
+      end
+
+      def dst_str
+        IpAddr.inspect(ip_dst)
+      end
+    end
+
+    include Optimized
   end
 end

@@ -1,5 +1,6 @@
 require "./libpcap"
 require "./bomap"
+require "./macros"
 
 module Pcap
   class Error < Exception
