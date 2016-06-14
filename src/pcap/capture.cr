@@ -14,6 +14,16 @@ module Pcap
       return new(pcap_t, netmask)
     end
 
+    def self.open_offline(file : String)
+      errbuf = uninitialized UInt8[LibPcap::PCAP_ERRBUF_SIZE]
+      pcap_t = LibPcap.pcap_open_offline(file, errbuf)
+      if pcap_t.null?
+        raise Error.new(String.new(errbuf.to_unsafe))
+      end
+      netmask = 16776960_u32 # of 0xFFFF00
+      return new(pcap_t, netmask)
+    end
+    
     @callback : Packet -> Nil
     property! :callback
 

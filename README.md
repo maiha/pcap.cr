@@ -1,4 +1,4 @@
-# pcap.cr
+# pcap.cr [![Build Status](https://travis-ci.org/maiha/pcap.cr.svg?branch=master)](https://travis-ci.org/maiha/pcap.cr)
 
 Crystal high level bindings for `libpcap`.
 - `crystal-libpcap(libpcap.cr)` is a low level bindings for `libpcap` created by [puppetpies].
@@ -45,6 +45,7 @@ end
   - [ ] parse
   - [ ] inspect
 - [ ] Test
+  - [x] `Pcap::Capture` offline
 
 ## Installation
 

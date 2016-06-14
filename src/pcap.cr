@@ -8,4 +8,4 @@ module Pcap
   Handler = LibPcap::PcapHandler 
 end
 
-require "./pcap/*"
+require "./pcap/**"
