@@ -33,7 +33,7 @@ module Pcap
 
     def setfilter(filter : String, optimize : Int32 = 1)
       # compile first
-      bpfprogram = Pointer(LibPcap::BpfProgram).new
+      bpfprogram = Pointer(LibPcap::BpfProgram).malloc(1_u64)
       safe { LibPcap.pcap_compile(@pcap, bpfprogram, filter, optimize, @netmask) }
       LibPcap.pcap_setfilter(@pcap, bpfprogram)
     end

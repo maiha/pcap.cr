@@ -3,7 +3,7 @@ module Pcap
     Bomap.n16 tcp_src, tcp_dst, tcp_offx2, tcp_win, tcp_sum, tcp_urg
     Bomap.n32 tcp_seq, tcp_ack
 
-    delegate caplen, @packet_header
+    delegate caplen, to: @packet_header
     
     def initialize(@raw : LibPcap::TcpHeader, @packet_header : PacketHeader)
     end

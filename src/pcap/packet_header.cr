@@ -9,7 +9,7 @@ module Pcap
 
     # Bomap.n16 caplen, len
     Bomap.nop caplen, len
-    delegate tv_sec, tv_usec, @raw.ts
+    delegate tv_sec, tv_usec, to: @raw.ts
     
     def initialize(@raw : LibPcap::PcapPkthdr)
     end

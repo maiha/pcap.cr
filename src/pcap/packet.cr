@@ -3,7 +3,7 @@ require "c/arpa/inet"
 module Pcap
   class Packet
     property packet_header : Pcap::PacketHeader
-    delegate caplen, len, @packet_header
+    delegate caplen, len, to: @packet_header
     
     def initialize(headp : LibPcap::PcapPkthdr*, @data : LibPcap::UChar*)
       # headp : a pointer to the packet header structure
