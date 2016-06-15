@@ -1,1 +1,7 @@
 language: crystal
+crystal:
+  - latest
+addons:
+  apt:
+    packages:
+    - libpcap-dev

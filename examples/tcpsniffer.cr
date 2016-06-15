@@ -18,7 +18,7 @@ dataonly = false
 bodymode = false
 
 opts = OptionParser.new do |parser|
-  parser.banner = "Usage: #{$0} [options]"
+  parser.banner = "#{$0} version 0.2.1\n\nUsage: #{$0} [options]"
 
   parser.on("-i lo", "Listen on interface") { |i| device = i }
   parser.on("-f 'tcp port 80'", "Pcap filter string. See pcap-filter(7)"  ) { |f| filter = f }
