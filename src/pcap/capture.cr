@@ -38,6 +38,15 @@ module Pcap
       LibPcap.pcap_setfilter(@pcap, bpfprogram)
     end
 
+    def set_promisc(flag : Bool)
+      if flag == true
+        flagset = 1
+      else
+        flagset = 0
+      end
+      LibPcap.pcap_set_promisc(@pcap, flagset)
+    end
+    
     def loop(count : Int32 = -1, &callback : Pcap::Packet ->)
       @@callback = callback   # ref to the object in order to avoid GC
       boxed = Box.box(callback).as(Pointer(UInt8)) # serialize to `UChar*` via `Void*`
