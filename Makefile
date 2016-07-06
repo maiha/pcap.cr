@@ -14,10 +14,10 @@ bin:
 	@mkdir -p bin
 
 tcpsniffer: examples/tcpsniffer.cr
-	crystal build --release $^ -o bin/$@ #${LINK_FLAGS}
+	crystal build --release $^ -o bin/$@ ${LINK_FLAGS}
 
 tcpbody: examples/tcpbody.cr
-	crystal build --release $^ -o bin/$@ #${LINK_FLAGS}
+	crystal build --release $^ -o bin/$@ ${LINK_FLAGS}
 
 spec:
 	crystal spec -v
