@@ -3,12 +3,14 @@ LINK_FLAGS = --link-flags "-static"
 SRCS = ${wildcard examples/*.cr}
 PROGS = $(SRCS:examples/%.cr=%)
 
-.PHONY : all build clean bin
+.PHONY : all clean bin test spec
 .PHONY : ${PROGS}
 
-all: build
+all: static
 
-build: bin ${PROGS}
+test: spec compile static version
+
+static: bin ${PROGS}
 
 bin:
 	@mkdir -p bin
@@ -22,10 +24,13 @@ tcpbody: examples/tcpbody.cr
 spec:
 	crystal spec -v
 
-test-compile-bin:
+compile:
 	@for x in examples/*.cr ; do\
 	  crystal build "$$x" -o /dev/null ;\
 	done
 
 clean:
 	@rm -rf bin tmp
+
+version: ${PROGS}
+	./bin/$^ --version

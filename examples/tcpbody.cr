@@ -5,6 +5,11 @@
 
 require "../src/pcap"
 
+if ARGV.delete("--version")
+  puts "tcpbody #{Pcap::VERSION}"
+  exit
+end
+
 port = ARGV.shift{ 80 }.to_i
 
 cap = Pcap::Capture.open_live("lo", snaplen: 1500)
