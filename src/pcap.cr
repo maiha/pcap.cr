@@ -3,7 +3,7 @@ require "./bomap"
 require "./macros"
 
 module Pcap
-  VERSION = "0.2.1"
+  VERSION = "0.2.2"
   
   class Error < Exception
   end
