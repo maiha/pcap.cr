@@ -37,7 +37,7 @@ lib LibPcap
   TH_FLAGS = [TH_FIN, TH_SYN, TH_RST, TH_ACK, TH_URG, TH_ECE, TH_CWR]
 
   # Ethernet Header
-  alias EthMac = UInt8[ETH_ALEN]
+  alias EthMac = UInt8[6] # ETH_ALEN
 
   struct EtherHeader
     ether_dhost : EthMac
