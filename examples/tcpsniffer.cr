@@ -5,6 +5,7 @@
 #   crystal examples/tcpsniffer.cr -- -f '(tcp port 80) or (tcp port 8080)' 
 #   crystal examples/tcpsniffer.cr -- -i eth0 -p 80
 
+require "colorize"
 require "../src/pcap"
 require "option_parser"
 
@@ -16,7 +17,9 @@ hexdump  = false
 verbose  = false
 dataonly = false
 bodymode = false
+filemode = false
 version  = false
+readfile = ""
 whitespace = false
 
 opts = OptionParser.new do |parser|
@@ -26,6 +29,7 @@ opts = OptionParser.new do |parser|
   parser.on("-f 'tcp port 80'", "Pcap filter string. See pcap-filter(7)"  ) { |f| filter = f }
   parser.on("-p 80", "Capture port (overridden by -f)") { |p| filter = "tcp port #{p}" }
   parser.on("-s 1500", "Snapshot length"  ) { |s| snaplen = s.to_i }
+  parser.on("-r file", "Read packets from file") {|d| readfile = d; filemode = true }
   parser.on("-d", "Filter packets where tcp data exists") { dataonly = true }
   parser.on("-b", "Body printing mode"    ) { bodymode = true }
   parser.on("-x", "Show hexdump output"   ) { hexdump  = true }
@@ -42,8 +46,14 @@ begin
     puts "tcpsniffer #{Pcap::VERSION}"
     exit
   end
+
+  if filemode
+    puts "reading from file: #{readfile}".colorize(:blue)
+    cap = Pcap::Capture.open_offline(readfile)
+  else
+    cap = Pcap::Capture.open_live(device, snaplen: snaplen, timeout_ms: timeout)
+  end
   
-  cap = Pcap::Capture.open_live(device, snaplen: snaplen, timeout_ms: timeout)
   at_exit { cap.close }
   cap.setfilter(filter)
 

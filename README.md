@@ -4,7 +4,7 @@ Crystal high level bindings for `libpcap`.
 - `crystal-libpcap(libpcap.cr)` is a low level bindings for `libpcap` created by [puppetpies].
 - `pcap.cr` is a wrapper for it and provides rich interface for packets like `ruby-pcap`.
 
-- Crystal: 0.18.7
+- Crystal: 0.19.1
 - Binary: https://github.com/maiha/pcap.cr/releases
 
 ```crystal
@@ -92,6 +92,9 @@ cap.loop do |pkt|
 
 ```shell
 % crystal examples/tcpbody.cr -- 6379
+
+# (or use compiled binary)
+% tcpbody 6379                       
 ```
 
 - run some redis command like `redis-cli get foo`
@@ -105,24 +108,26 @@ cap.loop do |pkt|
 
 ```shell
 % crystal examples/tcpsniffer.cr
-% crystal examples/tcpsniffer.cr -- -p 6379
-% crystal examples/tcpsniffer.cr -- -f '(tcp port 80) or (tcp port 8080)' 
-% crystal examples/tcpsniffer.cr -- -i eth0 -p 10080
+
+# (or binary)
+% tcpsniffier -p 6379
+% tcpsniffier -f '(tcp port 80) or (tcp port 8080)' 
+% tcpsniffier -i eth0 -p 10080
 ```
 
-- send some packets like `curl localhost`
+- send some packets to your specified port by `curl localhost` 
 
 ```
 12:29:01.445261 IP 127.0.0.1.56016 > 127.0.0.1.80: Flags [S], seq 746220255, win 43690, length 0
 12:29:01.445282 IP 127.0.0.1.80 > 127.0.0.1.56016: Flags [SA], seq 4032610561, ack 746220256, win 43690, length 0
 ```
 
-##### more output
+##### further output
 
 - `-x` prints hexdump of packets
 
-```
-% crystal examples/tcpsniffer.cr -- -x
+```shell
+% tcpsniffer -x
 12:30:12.305080 IP 127.0.0.1.56018 > 127.0.0.1.80: Flags [S], seq 4253528483, win 43690, length 0
         0x0000:  0000 0000 0000 0000 0000 0000 0800 4500  ..............E.
         0x0010:  003c 8c99 4000 4006 b020 7f00 0001 7f00  .<..@.@.. ......
@@ -133,8 +138,8 @@ cap.loop do |pkt|
 
 - `-v` prints packet structures (calls `inspect` internally)
 
-```
-% crystal examples/tcpsniffer.cr -- -v
+```shell
+% tcpsniffer -v
 --------------------------------------------------------------------------------
 Packet Header
   Time         : 2016-06-11 22:42:09 +0900 (1465652529.994580)
@@ -162,11 +167,32 @@ IpHeader
 
 - `-d` prints only packets where tcp data exist
 - `-b` prints body oriented format (body mode)
+- `-x` ignore all packets that contain only white spaces
 
-```
-% crystal examples/tcpsniffer.cr -- -b -d
+```shell
+% tcpsniffer -b -d
 17:12:24.261729: "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.47.0\r\nAccept: */*\r\n\r\n"
 17:12:24.262003: "HTTP/1.1 200 OK\r\nServer: nginx/1.10.0 (Ubuntu)\r\nDate: Mon, 13 Jun 2016 ...
+```
+
+##### replay
+
+- `-r file` reads from pcap file (same as `tcpdump -r`)
+
+```shell
+# record packets by root with tcpdump
+% tcpdump -i lo -s 0 -w /tmp/redis.dump 'port 6379'
+
+# in other shell
+% redis-cli ping
+
+# stop tcpdump by `Ctl-c`
+
+# reply by tcpsniffer
+% tcpsniffer -r /tmp/redis.dump -p 6379 -b -d
+reading from file: /tmp/redis.dump
+11:47:14.001208: "*1\r\n$4\r\nping\r\n"
+11:47:14.001569: "+PONG\r\n"
 ```
 
 ## Contributing
