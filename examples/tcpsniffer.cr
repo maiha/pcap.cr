@@ -18,6 +18,7 @@ verbose  = false
 dataonly = false
 bodymode = false
 filemode = false
+tcpflags = false
 version  = false
 readfile = ""
 whitespace = false
@@ -32,6 +33,7 @@ opts = OptionParser.new do |parser|
   parser.on("-r file", "Read packets from file") {|d| readfile = d; filemode = true }
   parser.on("-d", "Filter packets where tcp data exists") { dataonly = true }
   parser.on("-b", "Body printing mode"    ) { bodymode = true }
+  parser.on("-F", "Show tcp flags in body") { tcpflags = true }
   parser.on("-x", "Show hexdump output"   ) { hexdump  = true }
   parser.on("-v", "Show verbose output"   ) { verbose  = true }
   parser.on("-w", "Ignore all packets that contain only white spaces") { whitespace = true }
@@ -62,7 +64,8 @@ begin
 
     if bodymode
       next if whitespace && pkt.tcp_data.to_s =~ /\A\s*\Z/
-      puts "%s: %s" % [pkt.packet_header, pkt.tcp_data.to_s.inspect]
+      flags = tcpflags ? "[#{pkt.tcp_header.tcp_flags}]" : ""
+      puts "%s:%s %s" % [pkt.packet_header, flags, pkt.tcp_data.to_s.inspect]
     else
       puts pkt.to_s
       puts "-" * 80     if verbose

@@ -61,7 +61,8 @@ module Pcap
     )
 
     def tcp_data?
-      tcp_header.tcp_data_offset < caplen
+      # [experimental] assume PUSH as Data
+      tcp_header.tcp_data_offset < caplen && tcp_header.tcp_push?
     end
     
     val tcp_data = (
