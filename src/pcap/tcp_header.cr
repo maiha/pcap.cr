@@ -23,8 +23,9 @@ module Pcap
     ### native data
     
     def tcp_doff
-      # "101001..." => "1010".to_i(2) => 10
-      tcp_offx2.to_s(2)[0..3].to_i(2)
+      # 20504 => "[0101]000000011000" => "0101" => 5 words
+      # 32792 => "[1000]000000011000" => "1000" => 8 words
+      (tcp_offx2 >> 12).to_i
     end
 
     def tcp_data_offset
