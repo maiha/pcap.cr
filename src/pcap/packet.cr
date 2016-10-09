@@ -74,6 +74,12 @@ module Pcap
         tcp_header.{{ method.id }}
       end
     {% end %}
+    # tcp_flags
+    {% for key in %w(FIN SYN RST PUSH ACK URG URP ECE CWR) %}
+      def tcp_{{key.downcase.id}}?
+        tcp_header.tcp_{{key.downcase.id}}?
+      end
+    {% end %}
     
     val tcp_header = (
       ptr = @data + sizeof(LibPcap::EtherHeader) + size_ip
