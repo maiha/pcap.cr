@@ -70,6 +70,17 @@ describe "tcpsniffer" do
     end
   end
 
+  describe "-p 6379 -b -d -c" do
+    it "prints with color" do
+      # note: backslashes are escaped
+      run("-p 6379 -b -d -c").should eq <<-EOF
+        \e[32m22:36:51.327346: "*1\\r\\n$4\\r\\nping\\r\\n"\e[0m
+        22:36:51.327584: "+PONG\\r\\n"
+
+        EOF
+    end
+  end
+
   describe "-p 6379 -b -d -F" do
     it "prints filtered packets with payload data and tcp flags where payload data exist" do
       # note: backslashes are escaped

@@ -19,6 +19,7 @@ dataonly = false
 bodymode = false
 filemode = false
 tcpflags = false
+colorize = false
 version  = false
 readfile = ""
 whitespace = false
@@ -33,6 +34,7 @@ opts = OptionParser.new do |parser|
   parser.on("-r file", "Read packets from file") {|d| readfile = d; filemode = true }
   parser.on("-d", "Filter packets where tcp data exists") { dataonly = true }
   parser.on("-b", "Body printing mode"    ) { bodymode = true }
+  parser.on("-c", "Show colorized output" ) { colorize = true }
   parser.on("-F", "Show tcp flags in body") { tcpflags = true }
   parser.on("-x", "Show hexdump output"   ) { hexdump  = true }
   parser.on("-v", "Show verbose output"   ) { verbose  = true }
@@ -41,9 +43,32 @@ opts = OptionParser.new do |parser|
   parser.on("-h", "--help", "Show help"   ) { puts parser; exit 0 }
 end
 
+private macro with_color(color, message)
+  (colorize ? {{message}}.colorize({{color}}) : {{message}})
+end
+
+private macro puts_with_color(buffer)
+  if colorize && server_ports.any?
+    if server_ports.includes?(pkt.tcp_header.dst)
+      puts ({{buffer}}).colorize(:green)
+    else
+      puts {{buffer}}
+    end
+  else
+    puts {{buffer}}
+  end
+end
+
+private def extract_ports(filter) : Set(Int32)
+  # TODO: find strictly
+  Set(Int32).new.tap { |set| filter.scan(/(\d+)/){ set << $1.to_i} }
+end
+
 begin
   opts.parse!
 
+  server_ports = extract_ports(filter)
+  
   if version
     puts "tcpsniffer #{Pcap::VERSION}"
     exit
@@ -65,9 +90,9 @@ begin
     if bodymode
       next if whitespace && pkt.tcp_data.to_s =~ /\A\s*\Z/
       flags = tcpflags ? "[#{pkt.tcp_header.tcp_flags}]" : ""
-      puts "%s:%s %s" % [pkt.packet_header, flags, pkt.tcp_data.to_s.inspect]
+      puts_with_color "%s:%s %s" % [pkt.packet_header, flags, pkt.tcp_data.to_s.inspect]
     else
-      puts pkt.to_s
+      puts_with_color pkt.to_s
       puts "-" * 80     if verbose
       puts pkt.inspect  if verbose
       puts pkt.hexdump  if hexdump
