@@ -50,7 +50,7 @@ begin
   end
 
   if filemode
-    puts "reading from file: #{readfile}".colorize(:blue)
+    STDERR.puts "reading from file: #{readfile}".colorize(:blue)
     cap = Pcap::Capture.open_offline(readfile)
   else
     cap = Pcap::Capture.open_live(device, snaplen: snaplen, timeout_ms: timeout)

@@ -8,7 +8,7 @@ private def run(option)
 
   fail "program not found: '#{prog}'\nrun 'make static' first" unless File.exists?(prog)
   fail "packet file not found: #{file}" unless File.exists?(file)
-  `#{prog} -r #{file} #{option} | grep '^[0-9]'`
+  `#{prog} -r #{file} #{option} 2>/dev/null`
 end
 
 describe "tcpsniffer" do
