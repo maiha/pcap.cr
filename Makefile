@@ -8,7 +8,7 @@ PROGS = $(SRCS:examples/%.cr=%)
 
 all: static
 
-test: spec compile static version
+test: compile static version spec
 
 static: bin ${PROGS}
 
