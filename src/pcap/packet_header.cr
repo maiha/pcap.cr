@@ -19,7 +19,9 @@ module Pcap
     end
     
     def time
-      Time.epoch_ms(tv_msec).to_local
+      t = Time.epoch_ms(tv_msec)
+      t = t.to_local if Pcap.use_local_time
+      t
     end
 
     def captured_bytes

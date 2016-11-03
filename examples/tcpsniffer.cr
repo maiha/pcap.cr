@@ -36,6 +36,7 @@ opts = OptionParser.new do |parser|
   parser.on("-b", "Body printing mode"    ) { bodymode = true }
   parser.on("-c", "Show colorized output" ) { colorize = true }
   parser.on("-F", "Show tcp flags in body") { tcpflags = true }
+  parser.on("-u", "Show header in UTC"    ) { Pcap.use_local_time = false }
   parser.on("-x", "Show hexdump output"   ) { hexdump  = true }
   parser.on("-v", "Show verbose output"   ) { verbose  = true }
   parser.on("-w", "Ignore all packets that contain only white spaces") { whitespace = true }
