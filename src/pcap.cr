@@ -1,9 +1,10 @@
 require "./libpcap"
 require "./bomap"
 require "./macros"
+require "shard"
 
 module Pcap
-  VERSION = "0.2.6"
+  VERSION = Shard.version
   
   class Error < Exception
   end

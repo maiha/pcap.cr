@@ -1,6 +1,10 @@
 name: pcap
 version: 0.2.6
 
+dependencies:
+  shard:
+    github: maiha/shard.cr
+
 authors:
   - maiha <maiha@wota.jp>
 
