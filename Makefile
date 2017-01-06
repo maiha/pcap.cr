@@ -8,7 +8,7 @@ PROGS = $(SRCS:examples/%.cr=%)
 
 all: static
 
-test: compile static version spec
+test: check_version_mismatch compile static version spec
 
 static: bin ${PROGS}
 
@@ -34,3 +34,8 @@ clean:
 
 version: ${PROGS}
 	./bin/$^ --version
+
+
+.PHONY : check_version_mismatch
+check_version_mismatch: shard.yml README.md
+	diff -w -c <(grep version: README.md | head -1) <(grep ^version: shard.yml)
