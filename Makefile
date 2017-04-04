@@ -25,7 +25,8 @@ spec:
 	crystal spec -v
 
 compile:
-	@for x in examples/*.cr ; do\
+	@set -e; \
+	for x in examples/*.cr ; do\
 	  crystal build "$$x" -o /dev/null ;\
 	done
 
