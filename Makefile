@@ -21,6 +21,9 @@ tcpsniffer: examples/tcpsniffer.cr
 tcpbody: examples/tcpbody.cr
 	crystal build --release $^ -o bin/$@ ${LINK_FLAGS}
 
+filtertest: examples/filtertest.cr
+	crystal build --release $^ -o bin/$@ ${LINK_FLAGS}
+
 spec:
 	crystal spec -v
 

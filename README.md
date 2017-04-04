@@ -4,7 +4,7 @@ Crystal high level bindings for `libpcap`.
 - `crystal-libpcap(libpcap.cr)` is a low level bindings for `libpcap` created by [puppetpies].
 - `pcap.cr` is a wrapper for it and provides rich interface for packets like `ruby-pcap`.
 
-- Crystal: 0.20.4
+- Crystal: 0.21.1
 - x86_64 binary: https://github.com/maiha/pcap.cr/releases
 
 ```crystal
@@ -85,11 +85,24 @@ cap.loop do |pkt|
 
 ## Examples
 
-- (run as root)
+#### `filtertest`
+
+Test a string of `pcap-filter`.
+
+```shell
+% filtertest 'tcp'
+% filtertest 'tcp 80'
+syntax error
+% filtertest 'tcp port 80'
+% filtertest -f filter.data # for large string
+```
+
+(As it works, this command will not display any output.)
 
 #### `tcpbody`
 
 - Sniffer redis commands
+- (run as root)
 
 ```shell
 % crystal examples/tcpbody.cr -- 6379
@@ -106,6 +119,8 @@ cap.loop do |pkt|
 ```
 
 #### `tcpsniffer`
+
+- (run as root)
 
 ```shell
 % crystal examples/tcpsniffer.cr
@@ -206,5 +221,5 @@ reading from file: /tmp/redis.dump
 
 ## Contributors
 
-- [[maiha]](https://github.com/maiha) maiha - creator, maintainer
-- [[puppetpies]](https://github.com/puppetpies) Brian Hood - `libpcap.cr`
+- [maiha](https://github.com/maiha) maiha - creator, maintainer
+- [puppetpies](https://github.com/puppetpies) Brian Hood - `libpcap.cr`

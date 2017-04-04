@@ -4,12 +4,21 @@ module Pcap
     DEFAULT_PROMISC    = 1
     DEFAULT_TIMEOUT_MS = 1000
     DEFAULT_NETMASK    = 0xFFFFFF00_u32 # 255.255.255.0
+    DEFAULT_OPTIMIZE   = 1
 
     def self.open_live(device : String, snaplen : Int32 = DEFAULT_SNAPLEN, promisc : Int32 = DEFAULT_PROMISC, timeout_ms : Int32 = DEFAULT_TIMEOUT_MS)
       errbuf = uninitialized UInt8[LibPcap::PCAP_ERRBUF_SIZE]
       pcap_t = LibPcap.pcap_open_live(device, snaplen, promisc, timeout_ms, errbuf)
       if pcap_t.null?
         raise Error.new(String.new(errbuf.to_unsafe))
+      end
+      return new(pcap_t)
+    end
+
+    def self.open_dead(linktype : Int32 = DEFAULT_LINKTYPE, snaplen : Int32 = DEFAULT_SNAPLEN)
+      pcap_t = LibPcap.pcap_open_dead(linktype, snaplen)
+      if pcap_t.null?
+        raise "failed to call `pcap_open_dead`"
       end
       return new(pcap_t)
     end
@@ -30,11 +39,17 @@ module Pcap
       @callback = ->(p : Packet) {}
     end
 
-    def setfilter(filter : String, optimize : Int32 = 1, netmask : UInt32 = DEFAULT_NETMASK)
+    def setfilter(filter : String, optimize : Int32 = DEFAULT_OPTIMIZE, netmask : UInt32 = DEFAULT_NETMASK)
       # compile first
       bpfprogram = Pointer(LibPcap::BpfProgram).malloc(1_u64)
       safe { LibPcap.pcap_compile(@pcap, bpfprogram, filter, optimize, netmask) }
       LibPcap.pcap_setfilter(@pcap, bpfprogram)
+    end
+
+    def compile(filter, optimize = DEFAULT_OPTIMIZE, netmask = DEFAULT_NETMASK)
+      bpfprogram = Pointer(LibPcap::BpfProgram).malloc(1_u64)
+      safe { LibPcap.pcap_compile(@pcap, bpfprogram, filter, optimize, netmask) }
+      return bpfprogram
     end
 
     def set_promisc(flag : Bool)
