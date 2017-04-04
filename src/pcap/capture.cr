@@ -10,7 +10,7 @@ module Pcap
       if pcap_t.null?
         raise Error.new(String.new(errbuf.to_unsafe))
       end
-      netmask = 16776960_u32 # of 0xFFFF00
+      netmask = 0xFFFFFF00_u32 # 255.255.255.0
       return new(pcap_t, netmask)
     end
 
@@ -20,7 +20,7 @@ module Pcap
       if pcap_t.null?
         raise Error.new(String.new(errbuf.to_unsafe))
       end
-      netmask = 16776960_u32 # of 0xFFFF00
+      netmask = 0xFFFFFF00_u32 # 255.255.255.0
       return new(pcap_t, netmask)
     end
     
