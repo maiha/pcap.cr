@@ -4,7 +4,7 @@ require "./macros"
 require "shard"
 
 module Pcap
-  VERSION = Shard.version
+  VERSION = Shard.git_description.split(/\s+/, 2).last
   
   class Error < Exception
   end
