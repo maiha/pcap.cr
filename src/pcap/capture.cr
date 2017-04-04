@@ -3,6 +3,7 @@ module Pcap
     DEFAULT_SNAPLEN    = 1500
     DEFAULT_PROMISC    = 1
     DEFAULT_TIMEOUT_MS = 1000
+    DEFAULT_NETMASK    = 0xFFFFFF00_u32 # 255.255.255.0
 
     def self.open_live(device : String, snaplen : Int32 = DEFAULT_SNAPLEN, promisc : Int32 = DEFAULT_PROMISC, timeout_ms : Int32 = DEFAULT_TIMEOUT_MS)
       errbuf = uninitialized UInt8[LibPcap::PCAP_ERRBUF_SIZE]
@@ -10,8 +11,7 @@ module Pcap
       if pcap_t.null?
         raise Error.new(String.new(errbuf.to_unsafe))
       end
-      netmask = 0xFFFFFF00_u32 # 255.255.255.0
-      return new(pcap_t, netmask)
+      return new(pcap_t)
     end
 
     def self.open_offline(file : String)
@@ -20,21 +20,20 @@ module Pcap
       if pcap_t.null?
         raise Error.new(String.new(errbuf.to_unsafe))
       end
-      netmask = 0xFFFFFF00_u32 # 255.255.255.0
-      return new(pcap_t, netmask)
+      return new(pcap_t)
     end
     
     @callback : Packet -> Nil
     property! :callback
 
-    def initialize(@pcap : LibPcap::PcapT, @netmask : UInt32)
+    def initialize(@pcap : LibPcap::PcapT)
       @callback = ->(p : Packet) {}
     end
 
-    def setfilter(filter : String, optimize : Int32 = 1)
+    def setfilter(filter : String, optimize : Int32 = 1, netmask : UInt32 = DEFAULT_NETMASK)
       # compile first
       bpfprogram = Pointer(LibPcap::BpfProgram).malloc(1_u64)
-      safe { LibPcap.pcap_compile(@pcap, bpfprogram, filter, optimize, @netmask) }
+      safe { LibPcap.pcap_compile(@pcap, bpfprogram, filter, optimize, netmask) }
       LibPcap.pcap_setfilter(@pcap, bpfprogram)
     end
 
