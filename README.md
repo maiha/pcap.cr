@@ -4,7 +4,7 @@ Crystal high level bindings for `libpcap`.
 - `crystal-libpcap(libpcap.cr)` is a low level bindings for `libpcap` created by [puppetpies].
 - `pcap.cr` is a wrapper for it and provides rich interface for packets like `ruby-pcap`.
 
-- Crystal: 0.21.1
+- Crystal: 0.23.x
 - x86_64 binary: https://github.com/maiha/pcap.cr/releases
 
 ```crystal
