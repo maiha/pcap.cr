@@ -18,7 +18,7 @@ def load_packet(name) : Pcap::Packet
   end
 
   header = pointerof(slice).as(Pointer(LibPcap::PcapPkthdr))
-  data   = pointerof(slice).as(Pointer(LibPcap::UChar))
+  data = pointerof(slice).as(Pointer(LibPcap::UChar))
   packet = Pcap::Packet.new(header, data)
   return packet
 end
@@ -38,7 +38,7 @@ def load_packet_from_file(name) : Pcap::Packet
   end
 
   header = bytes.to_unsafe.as(Pointer(LibPcap::PcapPkthdr))
-  data   = bytes.to_unsafe.as(Pointer(LibPcap::UChar))
+  data = bytes.to_unsafe.as(Pointer(LibPcap::UChar))
   packet = Pcap::Packet.new(header, data)
   return packet
 end

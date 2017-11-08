@@ -13,7 +13,7 @@
 @[Link("pcap")]
 lib LibPcap
   # linux/if_ether.h
-  ETH_ALEN = 6                  # /* Octets in one ethernet addr   */
+  ETH_ALEN = 6 # /* Octets in one ethernet addr   */
 
   PCAP_ERRBUF_SIZE = 256
 
@@ -47,28 +47,28 @@ lib LibPcap
 
   # IP Header
   struct IpHeader
-    ip_vhl   : UInt8   # /* version << 4 | header length >> 2 */
-    ip_tos   : UInt8   # /* type of service */
-    ip_len   : UInt16  # /* total length */
-    ip_id    : UInt16  # /* identification */
-    ip_frag  : UInt16  # /* fragment offset field */
-    ip_ttl   : UInt8   # /* time to live */
-    ip_proto : UInt8   # /* protocol */
-    ip_sum   : UInt16  # /* checksum */
-    ip_src   : UInt32  # /* ip soruce address */
-    ip_dst   : UInt32  # /* destination address */
+    ip_vhl : UInt8   # /* version << 4 | header length >> 2 */
+    ip_tos : UInt8   # /* type of service */
+    ip_len : UInt16  # /* total length */
+    ip_id : UInt16   # /* identification */
+    ip_frag : UInt16 # /* fragment offset field */
+    ip_ttl : UInt8   # /* time to live */
+    ip_proto : UInt8 # /* protocol */
+    ip_sum : UInt16  # /* checksum */
+    ip_src : UInt32  # /* ip soruce address */
+    ip_dst : UInt32  # /* destination address */
   end
 
   # Tcp Header
   struct TcpHeader
-    tcp_src   : UInt16  # /* source port */
-    tcp_dst   : UInt16  # /* destination port */
-    tcp_seq   : UInt32  # /* sequence number */
-    tcp_ack   : UInt32  # /* acknowledgement number */
-    tcp_offx2 : UInt16  # /* data offset, rsvd */
-    tcp_win   : UInt16  # /* window */
-    tcp_sum   : UInt16  # /* checksum */
-    tcp_urg   : UInt16  # /* urgent pointer */
+    tcp_src : UInt16   # /* source port */
+    tcp_dst : UInt16   # /* destination port */
+    tcp_seq : UInt32   # /* sequence number */
+    tcp_ack : UInt32   # /* acknowledgement number */
+    tcp_offx2 : UInt16 # /* data offset, rsvd */
+    tcp_win : UInt16   # /* window */
+    tcp_sum : UInt16   # /* checksum */
+    tcp_urg : UInt16   # /* urgent pointer */
   end
 
   fun pcap_lookupdev(x0 : LibC::Char*) : LibC::Char*

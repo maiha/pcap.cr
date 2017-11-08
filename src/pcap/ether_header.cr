@@ -1,7 +1,7 @@
 module Pcap
   class EtherHeader
     Bomap.n16 ether_type
-    
+
     def initialize(@raw : LibPcap::EtherHeader)
     end
 

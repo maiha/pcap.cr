@@ -13,10 +13,10 @@ module Pcap
     end
 
     property value
-    
+
     def initialize(@value : UInt32)
     end
-    
+
     def to_s(io : IO)
       inspect(io)
     end

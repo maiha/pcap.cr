@@ -4,24 +4,24 @@ module Pcap
     Bomap.n32 tcp_seq, tcp_ack
 
     delegate caplen, to: @packet_header
-    
+
     def initialize(@raw : LibPcap::TcpHeader, @packet_header : PacketHeader)
     end
 
     ######################################################################
-    ### accessor
+    # ## accessor
 
     def src
       tcp_src
     end
-    
+
     def dst
       tcp_dst
     end
-    
+
     ######################################################################
-    ### native data
-    
+    # ## native data
+
     def tcp_doff
       # 20504 => "[0101]000000011000" => "0101" => 5 words
       # 32792 => "[1000]000000011000" => "1000" => 8 words
@@ -42,7 +42,7 @@ module Pcap
     def length
       tcp_doff * 4
     end
-    
+
     # tcp_flags
     {% for key in %w(FIN SYN RST PUSH ACK URG ECE CWR) %}
       def tcp_{{key.downcase.id}}?
@@ -63,11 +63,11 @@ module Pcap
     end
 
     def tcp_flags
-      String.build {|io| tcp_flags(io)}
+      String.build { |io| tcp_flags(io) }
     end
-    
-    #define TH_FLAGS (TH_FIN|TH_SYN|TH_RST|TH_ACK|TH_URG|TH_ECE|TH_CWR)
-    
+
+    # define TH_FLAGS (TH_FIN|TH_SYN|TH_RST|TH_ACK|TH_URG|TH_ECE|TH_CWR)
+
     def to_s(io : IO, ip_header : IpHeader)
       # "IP 127.0.0.1.55768 > 127.0.0.1.80: Flags [S], seq 3879550979, win 43690, options [mss 65495,sackOK,TS val 68977683 ecr 0,nop,wscale 7], length 0"
 
@@ -87,13 +87,13 @@ module Pcap
       if tcp_ack?
         io << "ack %s, " % tcp_ack
       end
-      
+
       # "win 43690, "
       io << "win %s, " % tcp_win
 
       # "options [mss 65495,sackOK,TS val 68977683 ecr 0,nop,wscale 7], "
       # TODO
-      
+
       # "length 0"
       io << "length %d" % tcp_data_size
     end

@@ -10,7 +10,7 @@ if ARGV.delete("--version")
   exit
 end
 
-port = ARGV.shift{ 80 }.to_i
+port = ARGV.shift { 80 }.to_i
 
 cap = Pcap::Capture.open_live("lo", snaplen: 1500)
 at_exit { cap.close }

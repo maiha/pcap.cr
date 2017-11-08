@@ -12,7 +12,7 @@ module Pcap
     end
 
     def to_s(io : IO)
-      ary = bytes.map{|v| to_printable(v)}
+      ary = bytes.map { |v| to_printable(v) }
       io << String.new(Slice.new(ary.to_unsafe, ary.size))
     end
 
@@ -20,7 +20,7 @@ module Pcap
     private def to_printable(v)
       case v
       when 0x0a, 0x0d; v
-      when 31..127 ; v
+      when 31..127   ; v
       else
         '.'.ord.to_u8
       end

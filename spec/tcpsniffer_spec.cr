@@ -40,7 +40,7 @@ describe "tcpsniffer" do
         EOF
     end
   end
-  
+
   describe "-p 6379 -b" do
     it "prints all packets with payload data" do
       # note: backslashes are escaped

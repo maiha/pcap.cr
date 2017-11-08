@@ -1,5 +1,5 @@
 lib LibC
-  fun ntohl(netlong  : UInt32T) : UInt32T
+  fun ntohl(netlong : UInt32T) : UInt32T
   fun ntohs(netshort : UInt16T) : UInt16T
 end
 
