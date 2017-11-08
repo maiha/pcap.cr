@@ -1,5 +1,9 @@
+require "./packet"
+
 module Pcap
   class Capture
+    include Iterator(Packet)
+
     DEFAULT_SNAPLEN    =           1500
     DEFAULT_PROMISC    =              1
     DEFAULT_TIMEOUT_MS =           1000
@@ -61,6 +65,7 @@ module Pcap
       LibPcap.pcap_set_promisc(@pcap, flagset)
     end
 
+    # calls `pcap_loop` that fetches all packets in the next buffer, and loop forever.
     def loop(count : Int32 = -1, &callback : Pcap::Packet ->)
       @@callback = callback                        # ref to the object in order to avoid GC
       boxed = Box.box(callback).as(Pointer(UInt8)) # serialize to `UChar*` via `Void*`
@@ -71,6 +76,35 @@ module Pcap
         cb.call(pkt)
       }
       LibPcap.pcap_loop(@pcap, count, handler, boxed)
+    end
+
+    # calls `pcap_next_ex` that reads the next packet and returns a success/failure indication.
+    def next_ex : NextError | Packet
+      ret = LibPcap.pcap_next_ex(@pcap, out headp, out bytes)
+      NextError.from_value?(ret) || Pcap::Packet.new(headp, bytes)
+    end
+
+    # called via `iterator`
+    def next
+      while (pkt = next_ex) == NextError::TIMEOUT
+      end
+
+      case pkt
+      when Packet          ; return pkt
+      when NextError::EOF  ; return stop
+      when NextError::ERROR; raise Pcap::Error.new("next_ex failed with code=#{pkt}")
+      else
+        raise Pcap::Error.new("BUG: unexpected packet status: #{pkt.class}")
+      end
+    end
+
+    # reads the next packet, and
+    # - trys again if read timeouted
+    # - returns `Pcap::Packet` if exists
+    # - returns `nil` if EOF reached (maybe read in offline mode)
+    # - raises `Pcap::Error` on error
+    def get? : Packet?
+      each.first
     end
 
     def close
