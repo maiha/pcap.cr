@@ -7,13 +7,23 @@ Crystal high level bindings for `libpcap`.
 - Crystal: 0.23.x
 - x86_64 binary: https://github.com/maiha/pcap.cr/releases
 
+## Usage : loop with handler
+
+- `Pcap::Capture#loop` : `NoReturn`
+
+is a easiest way to read all packets, and loop forever.
+`tcpdump` uses this style to capture packets.
+
 ```crystal
 require "pcap"
 
-cap = Pcap::Capture.open_live("eth0")
-cap.setfilter("tcp port 80")
-cap.loop do |pkt|
+pcap = Pcap::Capture.open_live("eth0")
+pcap.setfilter("tcp port 80")
+pcap.loop do |pkt|
   if pkt.tcp_data?
+    # p pkt.ether_header
+    # p pkt.ip_header
+    # p pkt.tcp_header
     p pkt.tcp_data.to_s
   end
 end
@@ -22,6 +32,38 @@ end
 ```
 "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.47.0\r\nAccept: */*\r\n\r\n"
 "HTTP/1.1 200 OK\r\nServer: nginx/1.10.0 (Ubuntu)\r\nDate: Mon, 13 Jun 2016 ...
+```
+
+## Usage : reads a packet without blocking
+
+- `Pcap::Capture#next_ex` : `Pcap::NextError` | `Pcap::Packet`
+
+reads a next packet without blocking.
+
+```crystal
+pkt = pcap.next_ex
+case pkt
+when Pcap::Packet            ; # use pkt as you like
+when Pcap::NextError::Timeout; # try again
+when Pcap::NextError::Error  ; abort "libpcap error"
+when Pcap::NextError::EOF    ; # found only in offline mode
+end
+```
+
+- `Pcap::Capture#get?` : `Pcap::Packet?`
+
+is a easiest way to read a packet. This api would block because `get?` = `next_ex` + timeout retry.
+
+```crystal
+if pkt = pcap.get?
+  puts pkt
+else
+  abort "EOF reached"
+end
+```
+
+```
+22:36:51.327153 IP 127.0.0.1.56903 > 127.0.0.1.6379: Flags [S], seq 3742863884, win 43690, length 0
 ```
 
 ## Status
@@ -58,7 +100,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   pcap:
     github: maiha/pcap.cr
-    version: 0.3.0
+    version: 0.4.0
 ```
 And then
 
@@ -66,24 +108,7 @@ And then
 % crystal deps
 ```
 
-## Usage
-
-```crystal
-require "pcap"
-
-cap = Pcap::Capture.open_live("eth0")
-cap.setfilter("tcp port 80")
-cap.loop do |pkt|
-  # p pkt.ether_header
-  # p pkt.ip_header
-  # p pkt.tcp_header
-  if pkt.tcp_data?
-    p pkt.tcp_data.to_s
-  end
-}
-```
-
-## Examples
+## Example applications
 
 #### `filtertest`
 
@@ -98,25 +123,6 @@ syntax error
 ```
 
 (As it works, this command will not display any output.)
-
-#### `tcpbody`
-
-- Sniffer redis commands
-- (run as root)
-
-```shell
-% crystal examples/tcpbody.cr -- 6379
-
-# (or use compiled binary)
-% tcpbody 6379                       
-```
-
-- run some redis command like `redis-cli get foo`
-
-```
-"*2\r\n$3\r\nget\r\n$3\r\nfoo\r\n"
-"$-1\r\n"
-```
 
 #### `tcpsniffer`
 
