@@ -25,7 +25,7 @@ readfile = ""
 whitespace = false
 
 opts = OptionParser.new do |parser|
-  parser.banner = "#{$0} version #{Pcap::VERSION}\n\nUsage: #{$0} [options]"
+  parser.banner = "#{PROGRAM_NAME} version #{Pcap::VERSION}\n\nUsage: #{PROGRAM_NAME} [options]"
 
   parser.on("-i lo", "Listen on interface") { |i| device = i }
   parser.on("-f 'tcp port 80'", "Pcap filter string. See pcap-filter(7)") { |f| filter = f }
@@ -100,5 +100,5 @@ begin
     end
   end
 rescue err
-  STDERR.puts "#{$0}: #{err}"
+  STDERR.puts "#{PROGRAM_NAME}: #{err}"
 end

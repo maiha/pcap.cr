@@ -9,7 +9,7 @@ private def run(option)
   fail "program not found: '#{prog}'\nrun 'make static' first" unless File.exists?(prog)
   fail "packet file not found: #{file}" unless File.exists?(file)
   # embed "-u" option in order to be independent from local timezone setting
-  `#{prog} -r #{file} -u #{option} 2>/dev/null`
+  `#{prog} -r #{file} -u #{option}`
 end
 
 describe "tcpsniffer" do

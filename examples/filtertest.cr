@@ -10,9 +10,9 @@ rescue err : Pcap::Error
   puts err
 end
 
-filter = ARGV.shift { abort "Usage: #{$0} filter-string" }
+filter = ARGV.shift { abort "Usage: #{PROGRAM_NAME} filter-string" }
 if filter == "-f"
-  path = ARGV.shift { abort "Usage: #{$0} -f file" }
+  path = ARGV.shift { abort "Usage: #{PROGRAM_NAME} -f file" }
   filter = File.read(path)
 end
 
