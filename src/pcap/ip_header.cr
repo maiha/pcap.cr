@@ -24,8 +24,7 @@ module Pcap
     end
 
     def to_s(io : IO)
-      io << time.to_s("%H:%M:%S.")
-      io << "%06d" % tv_usec
+      io << "IPv%s %s>%s" % [ip_v, src, dst]
     end
 
     def inspect(io : IO)
