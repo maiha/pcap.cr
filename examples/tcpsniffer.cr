@@ -19,6 +19,8 @@ dataonly = false
 bodymode = false
 filemode = false
 tcpflags = false
+writedir = nil
+writeseq = 0
 colorize = false
 version = false
 readfile = ""
@@ -40,6 +42,7 @@ opts = OptionParser.new do |parser|
   parser.on("-x", "Show hexdump output") { hexdump = true }
   parser.on("-v", "Show verbose output") { verbose = true }
   parser.on("-w", "Ignore all packets that contain only white spaces") { whitespace = true }
+  parser.on("-W DIR", "Write each tcp data by file in the DIR") { |v| writedir = v }
   parser.on("--version", "Print the version and exit") { version = true }
   parser.on("-h", "--help", "Show help") { puts parser; exit 0 }
 end
@@ -75,6 +78,10 @@ begin
     exit
   end
 
+  if dir = writedir
+    File.directory?(dir) || Dir.mkdir(dir)
+  end
+
   if filemode
     STDERR.puts "reading from file: #{readfile}".colorize(:blue)
     cap = Pcap::Capture.open_offline(readfile)
@@ -87,6 +94,11 @@ begin
 
   cap.loop do |pkt|
     next if dataonly && !pkt.tcp_data?
+
+    if writedir
+      writeseq += 1
+      File.write("#{writedir}/#{writeseq}.pcap", pkt.tcp_data.bytes)
+    end
 
     if bodymode
       next if whitespace && pkt.tcp_data.to_s =~ /\A\s*\Z/

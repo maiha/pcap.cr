@@ -197,6 +197,29 @@ IpHeader
 17:12:24.262003: "HTTP/1.1 200 OK\r\nServer: nginx/1.10.0 (Ubuntu)\r\nDate: Mon, 13 Jun 2016 ...
 ```
 
+- `-W DIR` writes each tcp data by file in the DIR
+
+```shell
+% tcpsniffer -p 6379 -d -W pcap
+16:37:03.683540 IP 127.0.0.1.52182 > 127.0.0.1.6379: Flags [PA], seq 3176296709, ack 3372892385, win 342, length 14
+16:37:03.683611 IP 127.0.0.1.6379 > 127.0.0.1.52182: Flags [PA], seq 3372892385, ack 3176296723, win 342, length 7
+
+% redis-cli ping
+PONG
+
+% ls -l pcap
+-rw-r--r-- 1 root root 14 Mar  6 16:37 1.pcap
+-rw-r--r-- 1 root root  7 Mar  6 16:37 2.pcap
+
+% hd pcap/1.pcap
+00000000  2a 31 0d 0a 24 34 0d 0a  50 49 4e 47 0d 0a        |*1..$4..PING..|
+0000000e
+
+% hd pcap/2.pcap
+00000000  2b 50 4f 4e 47 0d 0a                              |+PONG..|
+00000007
+```
+
 ##### replay
 
 - `-r file` reads from pcap file (same as `tcpdump -r`)
