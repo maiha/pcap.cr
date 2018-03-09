@@ -20,7 +20,7 @@ bodymode = false
 filemode = false
 tcpflags = false
 writedir = nil
-writeseq = 0
+dstcount = 0
 colorize = false
 version = false
 readfile = ""
@@ -45,6 +45,10 @@ opts = OptionParser.new do |parser|
   parser.on("-W DIR", "Write each tcp data by file in the DIR") { |v| writedir = v }
   parser.on("--version", "Print the version and exit") { version = true }
   parser.on("-h", "--help", "Show help") { puts parser; exit 0 }
+end
+
+private macro is_dst_packet(pkt)
+  server_ports.includes?({{pkt}}.tcp_header.dst)
 end
 
 private macro with_color(color, message)
@@ -92,12 +96,21 @@ begin
   at_exit { cap.close }
   cap.setfilter(filter)
 
+  prev_dst = nil
   cap.loop do |pkt|
     next if dataonly && !pkt.tcp_data?
 
     if writedir
-      writeseq += 1
-      File.write("#{writedir}/#{writeseq}.pcap", pkt.tcp_data.bytes)
+      is_dst = is_dst_packet(pkt)
+      d_or_s = is_dst ? "d" : "s"
+
+      # TODO: Support multiple responses to enable following codes.
+#      dstcount += 1 if is_dst
+#      path = "%s/%d%s.pcap" % [writedir, dstcount, d_or_s]
+
+      dstcount += 1
+      path = "%s/%d%s.pcap" % [writedir, dstcount, d_or_s]
+      File.write(path, pkt.tcp_data.bytes)
     end
 
     if bodymode
