@@ -100,7 +100,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   pcap:
     github: maiha/pcap.cr
-    version: 0.5.0
+    version: 0.6.0
 ```
 And then
 
