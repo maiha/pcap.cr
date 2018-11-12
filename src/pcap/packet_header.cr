@@ -19,7 +19,7 @@ module Pcap
     end
 
     def time
-      t = Time.epoch_ms(tv_msec)
+      t = Time.unix_ms(tv_msec)
       t = t.to_local if Pcap.use_local_time
       t
     end
