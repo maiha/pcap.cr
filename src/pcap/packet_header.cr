@@ -14,12 +14,12 @@ module Pcap
     def initialize(@raw : LibPcap::PcapPkthdr)
     end
 
-    def tv_msec
+    def tv_msec : Float64
       tv_sec * 1000 + tv_usec / 1000
     end
 
     def time
-      t = Time.unix_ms(tv_msec)
+      t = Time.unix_ms(tv_msec.to_i64)
       t = t.to_local if Pcap.use_local_time
       t
     end

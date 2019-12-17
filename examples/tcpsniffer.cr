@@ -73,7 +73,7 @@ private def extract_ports(filter) : Set(Int32)
 end
 
 begin
-  opts.parse!
+  opts.parse
 
   server_ports = extract_ports(filter)
 
