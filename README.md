@@ -4,7 +4,7 @@ Crystal high level bindings for `libpcap`.
 - `crystal-libpcap(libpcap.cr)` is a low level bindings for `libpcap` created by [puppetpies].
 - `pcap.cr` is a wrapper for it and provides rich interface for packets like `ruby-pcap`.
 
-- Crystal: 0.27.0
+- Crystal: 0.31.1 0.32.1 0.33.0 0.34.0
 - x86_64 binary: https://github.com/maiha/pcap.cr/releases
 
 ## Usage : loop with handler
@@ -104,8 +104,8 @@ dependencies:
 ```
 And then
 
-```shell
-% shards update
+```console
+$ shards update
 ```
 
 ## Example applications
@@ -114,12 +114,12 @@ And then
 
 Test a string of `pcap-filter`.
 
-```shell
-% filtertest 'tcp'
-% filtertest 'tcp 80'
+```console
+$ filtertest 'tcp'
+$ filtertest 'tcp 80'
 syntax error
-% filtertest 'tcp port 80'
-% filtertest -f filter.data # for large string
+$ filtertest 'tcp port 80'
+$ filtertest -f filter.data # for large string
 ```
 
 (As it works, this command will not display any output.)
@@ -128,13 +128,13 @@ syntax error
 
 - (run as root)
 
-```shell
-% crystal examples/tcpsniffer.cr
+```console
+$ crystal examples/tcpsniffer.cr
 
 # (or binary)
-% tcpsniffier -p 6379
-% tcpsniffier -f '(tcp port 80) or (tcp port 8080)' 
-% tcpsniffier -i eth0 -p 10080
+$ tcpsniffier -p 6379
+$ tcpsniffier -f '(tcp port 80) or (tcp port 8080)' 
+$ tcpsniffier -i eth0 -p 10080
 ```
 
 - send some packets to your specified port by `curl localhost` 
@@ -148,8 +148,8 @@ syntax error
 
 - `-x` prints hexdump of packets
 
-```shell
-% tcpsniffer -x
+```console
+$ tcpsniffer -x
 12:30:12.305080 IP 127.0.0.1.56018 > 127.0.0.1.80: Flags [S], seq 4253528483, win 43690, length 0
         0x0000:  0000 0000 0000 0000 0000 0000 0800 4500  ..............E.
         0x0010:  003c 8c99 4000 4006 b020 7f00 0001 7f00  .<..@.@.. ......
@@ -160,8 +160,8 @@ syntax error
 
 - `-v` prints packet structures (calls `inspect` internally)
 
-```shell
-% tcpsniffer -v
+```console
+$ tcpsniffer -v
 --------------------------------------------------------------------------------
 Packet Header
   Time         : 2016-06-11 22:42:09 +0900 (1465652529.994580)
@@ -191,31 +191,31 @@ IpHeader
 - `-b` prints body oriented format (body mode)
 - `-x` ignore all packets that contain only white spaces
 
-```shell
-% tcpsniffer -b -d
+```console
+$ tcpsniffer -b -d
 17:12:24.261729: "GET / HTTP/1.1\r\nHost: localhost\r\nUser-Agent: curl/7.47.0\r\nAccept: */*\r\n\r\n"
 17:12:24.262003: "HTTP/1.1 200 OK\r\nServer: nginx/1.10.0 (Ubuntu)\r\nDate: Mon, 13 Jun 2016 ...
 ```
 
 - `-W DIR` writes each tcp data by file in the DIR
 
-```shell
-% tcpsniffer -p 6379 -d -W pcap
+```console
+$ tcpsniffer -p 6379 -d -W pcap
 16:37:03.683540 IP 127.0.0.1.52182 > 127.0.0.1.6379: Flags [PA], seq 3176296709, ack 3372892385, win 342, length 14
 16:37:03.683611 IP 127.0.0.1.6379 > 127.0.0.1.52182: Flags [PA], seq 3372892385, ack 3176296723, win 342, length 7
 
-% redis-cli ping
+$ redis-cli ping
 PONG
 
-% ls -l pcap
+$ ls -l pcap
 -rw-r--r-- 1 root root 14 Mar  6 16:37 1.pcap
 -rw-r--r-- 1 root root  7 Mar  6 16:37 2.pcap
 
-% hd pcap/1.pcap
+$ hd pcap/1.pcap
 00000000  2a 31 0d 0a 24 34 0d 0a  50 49 4e 47 0d 0a        |*1..$4..PING..|
 0000000e
 
-% hd pcap/2.pcap
+$ hd pcap/2.pcap
 00000000  2b 50 4f 4e 47 0d 0a                              |+PONG..|
 00000007
 ```
@@ -224,17 +224,17 @@ PONG
 
 - `-r file` reads from pcap file (same as `tcpdump -r`)
 
-```shell
+```console
 # record packets by root with tcpdump
-% tcpdump -i lo -s 0 -w /tmp/redis.dump 'port 6379'
+$ tcpdump -i lo -s 0 -w /tmp/redis.dump 'port 6379'
 
 # in other shell
-% redis-cli ping
+$ redis-cli ping
 
 # stop tcpdump by `Ctl-c`
 
 # reply by tcpsniffer
-% tcpsniffer -r /tmp/redis.dump -p 6379 -b -d
+$ tcpsniffer -r /tmp/redis.dump -p 6379 -b -d
 reading from file: /tmp/redis.dump
 11:47:14.001208: "*1\r\n$4\r\nping\r\n"
 11:47:14.001569: "+PONG\r\n"

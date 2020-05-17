@@ -10,12 +10,12 @@ GUESSED_VERSION=$(shell git tag -l | sort -V | tail -1 | awk 'BEGIN { FS="." } {
 
 .SHELLFLAGS = -o pipefail -c
 
-.PHONY : all clean bin test spec
+.PHONY : all clean bin ci spec
 .PHONY : ${PROGS}
 
 all: static
 
-test: check_version_mismatch compile static spec
+ci: check_version_mismatch clean static spec
 
 static: bin ${PROGS}
 

@@ -4,4 +4,4 @@ addons:
     packages:
     - libpcap-dev
 script:
-  - make test
+  - make ci
